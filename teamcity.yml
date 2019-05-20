@@ -1,0 +1,37 @@
+version: '3'
+services:
+  percona:
+    image: percona:5.7
+    container_name: percona
+    volumes:
+      - 'db_teamcity:/var/lib/mysql'
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_USER=devops
+      - MYSQL_PASSWORD=d3v0ps404
+      - MYSQL_DATABASE=teamcitydb
+      - MYSQL_ROOT_PASSWORD=perconapw
+    restart: always
+
+  teamcity:
+     image: jetbrains/teamcity-server
+     container_name: teamcity
+     volumes:
+       - '/opt/teamcitydata:/data/teamcity_server/datadir'
+       - '/opt/teamcitylogs:/opt/teamcity/logs'
+     ports:
+       - 8111:8111
+     expose:
+       - "8111"
+#     environment:
+#      - MYSQL_DATABASE=teamcitydb
+#      - MYSQL_USER=devops
+#      - MYSQL_PASSWORD=d3v0ps404
+     links:
+       - percona
+     restart: always
+
+volumes:
+  db_teamcity:
+    driver: local
